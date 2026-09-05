@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DS Instrumentação Estética</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --espresso:#412F21; --gold:#AF9364; --gold-deep:#8F764C; --taupe:#625A4F;
+    --cream:#FFFBF2; --surface:#F6F4F3; --ink:#333333; --alert:#D64562; --success:#5B7A52;
+    --bg:var(--cream); --panel:#ffffff; --panel-2:var(--surface); --text:var(--espresso);
+    --text-2:#6b5d4d; --border:#E7E0D4; --border-strong:#D8CDB9; --accent:var(--gold); --code-bg:#F1ECE1;
+    --step--1:.82rem; --step-0:1rem; --step-1:1.25rem; --step-2:1.6rem;
+    --step-3:2.1rem; --step-4:2.8rem; --step-5:3.75rem;
+    --sp-1:4px; --sp-2:8px; --sp-3:16px; --sp-4:24px; --sp-5:32px; --sp-6:48px; --sp-7:64px; --sp-8:96px;
+    --r-sm:10px; --r-md:15px; --r-lg:24px; --r-xl:40px; --r-pill:100px;
+    --sh-1:0 1px 2px rgba(65,47,33,.06); --sh-2:0 6px 18px rgba(65,47,33,.10);
+    --sh-focus:0 0 0 3px rgba(175,147,100,.45);
+    --maxw:1120px;
+    --font:"Host Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#211913; --panel:#2b211a; --panel-2:#332820; --text:#F4ECDD; --text-2:#c3b39c;
+      --border:#43362a; --border-strong:#54432f; --accent:#C6A972; --code-bg:#2f261d;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#211913; --panel:#2b211a; --panel-2:#332820; --text:#F4ECDD; --text-2:#c3b39c;
+    --border:#43362a; --border-strong:#54432f; --accent:#C6A972; --code-bg:#2f261d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
+    font-size:var(--step-0);line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{margin:0;font-weight:600;line-height:1.12;text-wrap:balance;letter-spacing:-.01em}
+  p{margin:0} a{color:inherit} code,.mono{font-family:var(--mono);font-size:.85em}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--sp-4)}
+  .layout{display:grid;grid-template-columns:220px 1fr;gap:var(--sp-7);max-width:var(--maxw);margin:0 auto;padding:0 var(--sp-4)}
+  header.hero{border-bottom:1px solid var(--border);background:radial-gradient(120% 140% at 88% -10%,rgba(175,147,100,.16),transparent 60%);}
+  .hero .wrap{padding-top:var(--sp-8);padding-bottom:var(--sp-7)}
+  .eyebrow{font-family:var(--mono);font-size:var(--step--1);letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:var(--sp-3)}
+  .hero h1{font-size:clamp(2.2rem,5vw,var(--step-5));max-width:16ch}
+  .hero p.lead{margin-top:var(--sp-4);max-width:60ch;color:var(--text-2);font-size:var(--step-1)}
+  .hero .meta{margin-top:var(--sp-5);display:flex;flex-wrap:wrap;gap:var(--sp-2)}
+  .tag{font-family:var(--mono);font-size:var(--step--1);padding:6px 12px;border:1px solid var(--border-strong);border-radius:var(--r-pill);color:var(--text-2)}
+  nav.side{position:sticky;top:var(--sp-4);align-self:start;padding-top:var(--sp-7);font-family:var(--mono);font-size:.8rem}
+  nav.side ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+  nav.side a{display:block;text-decoration:none;color:var(--text-2);padding:8px 12px;border-radius:var(--r-sm);border-left:2px solid transparent;letter-spacing:.04em}
+  nav.side a:hover{background:var(--panel-2);color:var(--text)}
+  nav.side .n{color:var(--accent);margin-right:8px}
+  main{padding-top:var(--sp-7);padding-bottom:var(--sp-8);min-width:0}
+  section{margin-bottom:var(--sp-8);scroll-margin-top:var(--sp-4)}
+  .sec-head{display:flex;align-items:baseline;gap:var(--sp-3);border-bottom:1px solid var(--border);padding-bottom:var(--sp-3);margin-bottom:var(--sp-5)}
+  .sec-head .num{font-family:var(--mono);color:var(--accent);font-size:var(--step--1)}
+  .sec-head h2{font-size:var(--step-3)}
+  .lead-2{color:var(--text-2);max-width:62ch;margin-bottom:var(--sp-5)}
+  .swatch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:var(--sp-3)}
+  .swatch{border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;background:var(--panel)}
+  .swatch .chip{height:96px;display:flex;align-items:flex-end;padding:var(--sp-2)}
+  .swatch .info{padding:var(--sp-3)}
+  .swatch .name{font-weight:600;font-size:.95rem}
+  .swatch .hex{font-family:var(--mono);font-size:.8rem;color:var(--text-2);margin-top:2px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .swatch .role{font-size:.8rem;color:var(--text-2);margin-top:6px;line-height:1.4}
+  .dotwhite{color:#fff8ec}.dotdark{color:var(--espresso)}
+  .cols-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-5)}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--sp-5)}
+  .panel{background:var(--panel-2);border:1px solid var(--border);border-radius:var(--r-md);padding:var(--sp-5)}
+  .spec{display:grid;grid-template-columns:130px 1fr;gap:var(--sp-4);align-items:baseline;padding:var(--sp-4) 0;border-bottom:1px dashed var(--border)}
+  .spec:last-child{border-bottom:0}
+  .spec .label{font-family:var(--mono);font-size:.78rem;color:var(--text-2);line-height:1.5}
+  .spec .label b{color:var(--text);display:block;font-family:var(--font);font-size:.95rem;font-weight:600}
+  .t-h1{font-size:var(--step-4);font-weight:700}
+  .t-h2{font-size:var(--step-3);font-weight:600}
+  .t-h3{font-size:var(--step-2);font-weight:600}
+  .t-h4{font-size:var(--step-1);font-weight:600}
+  .t-body{font-size:var(--step-0);font-weight:400;color:var(--text)}
+  .t-small{font-size:var(--step--1);color:var(--text-2)}
+  .t-eyebrow{font-family:var(--mono);text-transform:uppercase;letter-spacing:.18em;font-size:var(--step--1);color:var(--accent)}
+  .btn{font-family:var(--font);font-weight:500;font-size:1rem;letter-spacing:.04em;text-transform:uppercase;border-radius:var(--r-pill);padding:14px 30px;border:2px solid transparent;cursor:pointer;transition:.16s ease;display:inline-flex;align-items:center;gap:10px;text-decoration:none}
+  .btn:focus-visible{outline:none;box-shadow:var(--sh-focus)}
+  .btn-primary{background:var(--gold);color:#FBF7EE}
+  .btn-primary:hover{background:var(--gold-deep);transform:translateY(-1px)}
+  .btn-secondary{background:var(--espresso);color:var(--cream)}
+  .btn-secondary:hover{background:#2f2116}
+  .btn-outline{background:transparent;color:var(--accent);border-color:var(--accent)}
+  .btn-outline:hover{background:rgba(175,147,100,.12)}
+  .btn-ghost{background:transparent;color:var(--text-2);text-transform:none;letter-spacing:0;padding:10px 14px}
+  .btn-ghost:hover{color:var(--text)}
+  .btn:disabled,.btn[aria-disabled]{opacity:.45;cursor:not-allowed;transform:none}
+  .btn-row{display:flex;flex-wrap:wrap;gap:var(--sp-3);align-items:center}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:var(--sp-4)}
+  .field label{font-size:.85rem;font-weight:600;color:var(--text)}
+  .field .hint{font-size:.78rem;color:var(--text-2)}
+  .input{font-family:var(--font);font-size:1rem;color:var(--text);background:var(--panel);border:1.5px solid var(--border-strong);border-radius:var(--r-sm);padding:13px 15px;width:100%;transition:.16s}
+  .input::placeholder{color:#a99b86}
+  .input:focus{outline:none;border-color:var(--accent);box-shadow:var(--sh-focus)}
+  .input.err{border-color:var(--alert)}
+  .err-msg{font-size:.78rem;color:var(--alert);display:flex;align-items:center;gap:5px}
+  .offer{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-2)}
+  .offer .top{background:var(--taupe);color:var(--cream);padding:var(--sp-4) var(--sp-5)}
+  .offer .top .k{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;opacity:.8}
+  .offer .body{padding:var(--sp-5)}
+  .offer .price{font-size:var(--step-3);font-weight:700;color:var(--text)}
+  .offer .price small{font-size:.9rem;font-weight:400;color:var(--text-2)}
+  .offer ul{list-style:none;margin:var(--sp-4) 0;padding:0;display:flex;flex-direction:column;gap:10px}
+  .offer li{display:flex;gap:10px;font-size:.95rem;color:var(--text-2)}
+  .offer li b{color:var(--text);font-weight:600}
+  .check{color:var(--success);flex:none;margin-top:2px}
+  .scarcity{display:inline-flex;align-items:center;gap:7px;background:rgba(214,69,98,.1);color:var(--alert);font-size:.8rem;font-weight:600;padding:6px 12px;border-radius:var(--r-pill);margin-bottom:var(--sp-3)}
+  .tok{display:grid;gap:var(--sp-2)}
+  .tok-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:var(--sp-3);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 16px;background:var(--panel)}
+  .tok-row .demo{justify-self:end}
+  .tok-name{font-family:var(--mono);font-size:.82rem}
+  .tok-name span{color:var(--text-2)}
+  .radius-demo{width:64px;height:40px;background:var(--gold);border:2px solid var(--gold-deep)}
+  .space-demo{height:20px;background:var(--accent);border-radius:3px}
+  .elev-demo{width:80px;height:44px;background:var(--panel);border:1px solid var(--border);border-radius:var(--r-sm)}
+  .usability{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--sp-3)}
+  .u-card{border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--r-sm);padding:var(--sp-4);background:var(--panel)}
+  .u-card h4{font-size:1rem;margin-bottom:6px}
+  .u-card p{font-size:.88rem;color:var(--text-2)}
+  footer{border-top:1px solid var(--border);padding:var(--sp-6) 0;color:var(--text-2);font-size:.85rem}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-3)}
+  .toggle{position:fixed;top:16px;right:16px;z-index:20;font-family:var(--mono);font-size:.72rem;background:var(--panel);color:var(--text);border:1px solid var(--border-strong);border-radius:var(--r-pill);padding:8px 14px;cursor:pointer}
+  @media (max-width:860px){ .layout{grid-template-columns:1fr;gap:0} nav.side{display:none} .cols-2{grid-template-columns:1fr} }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<button class="toggle" id="tt">◐ tema</button>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Design System · v1.0 · Landing de Infoproduto</div>
+    <h1>Base visual para a linha de frente da estética</h1>
+    <p class="lead">Um sistema quente e premium — derivado da identidade da landing DDP — reorganizado para vender um infoproduto a <b>instrumentadores plásticos</b>. Prioridade: leitura fácil, hierarquia clara e um caminho de conversão sem atrito.</p>
+    <div class="meta">
+      <span class="tag">Host Grotesk</span>
+      <span class="tag">#412F21 · #AF9364 · #FFFBF2</span>
+      <span class="tag">Flat + pill CTA</span>
+      <span class="tag">Foco: usabilidade</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="side" aria-label="Índice">
+    <ol>
+      <li><a href="#cores"><span class="n">01</span>Cores</a></li>
+      <li><a href="#tipografia"><span class="n">02</span>Tipografia</a></li>
+      <li><a href="#componentes"><span class="n">03</span>Componentes</a></li>
+      <li><a href="#estetica"><span class="n">04</span>Estética</a></li>
+      <li><a href="#usabilidade"><span class="n">05</span>Usabilidade</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <section id="cores">
+      <div class="sec-head"><span class="num">01</span><h2>Cores</h2></div>
+      <p class="lead-2">Paleta quente e terrosa: transmite confiança, sofisticação e “bastidor cirúrgico premium”. O dourado é o único acento de ação — use-o com parcimônia para que o CTA sempre se destaque.</p>
+      <h4 style="margin-bottom:var(--sp-3)">Principal</h4>
+      <div class="swatch-grid" style="margin-bottom:var(--sp-5)">
+        <div class="swatch"><div class="chip" style="background:#412F21"><span class="dotwhite mono">Aa</span></div><div class="info"><div class="name">Espresso</div><div class="hex"><span>#412F21</span></div><div class="role">Títulos, texto forte, botão secundário.</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#AF9364"><span class="dotwhite mono">Aa</span></div><div class="info"><div class="name">Dourado</div><div class="hex"><span>#AF9364</span></div><div class="role">Acento único de ação: CTA e destaques.</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#FFFBF2"><span class="dotdark mono">Aa</span></div><div class="info"><div class="name">Creme</div><div class="hex"><span>#FFFBF2</span></div><div class="role">Fundo padrão da página.</div></div></div>
+      </div>
+      <h4 style="margin-bottom:var(--sp-3)">Secundária &amp; suporte</h4>
+      <div class="swatch-grid" style="margin-bottom:var(--sp-5)">
+        <div class="swatch"><div class="chip" style="background:#625A4F"><span class="dotwhite mono">Aa</span></div><div class="info"><div class="name">Taupe</div><div class="hex"><span>#625A4F</span></div><div class="role">Seções escuras, cabeçalhos de card.</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#F6F4F3"><span class="dotdark mono">Aa</span></div><div class="info"><div class="name">Off-white</div><div class="hex"><span>#F6F4F3</span></div><div class="role">Superfícies de card e inputs.</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#333333"><span class="dotwhite mono">Aa</span></div><div class="info"><div class="name">Grafite</div><div class="hex"><span>#333333</span></div><div class="role">Corpo de texto neutro (alternativo).</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#E7E0D4"><span class="dotdark mono">Aa</span></div><div class="info"><div class="name">Areia</div><div class="hex"><span>#E7E0D4</span></div><div class="role">Bordas, divisores, linhas sutis.</div></div></div>
+      </div>
+      <h4 style="margin-bottom:var(--sp-3)">Funcionais</h4>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="chip" style="background:#D64562"><span class="dotwhite mono">Aa</span></div><div class="info"><div class="name">Alerta / Escassez</div><div class="hex"><span>#D64562</span></div><div class="role">Urgência, vagas, contadores. Derivado do #FF0044 original, dessaturado para não cansar.</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#5B7A52"><span class="dotwhite mono">Aa</span></div><div class="info"><div class="name">Sucesso</div><div class="hex"><span>#5B7A52</span></div><div class="role">Confirmação, itens inclusos, ✓.</div></div></div>
+      </div>
+    </section>
+
+    <section id="tipografia">
+      <div class="sec-head"><span class="num">02</span><h2>Tipografia</h2></div>
+      <p class="lead-2">A fonte da marca é a <b>Host Grotesk</b> (Google Fonts) — grotesca humanista, moderna e altamente legível em telas. Para citações/depoimentos, um toque serifado remete à origem (Times New Roman); sugestão de substituto refinado: <b>Fraunces</b> ou <b>Newsreader</b>. Corpo nunca abaixo de 16px.</p>
+      <div class="cols-2" style="align-items:start;margin-bottom:var(--sp-5)">
+        <div class="card">
+          <div class="t-eyebrow" style="margin-bottom:8px">Família principal</div>
+          <div style="font-size:var(--step-4);font-weight:700;line-height:1">Host Grotesk</div>
+          <div style="margin-top:var(--sp-3);color:var(--text-2)">300 · 400 · 500 · 600 · 700 · 800</div>
+          <div style="margin-top:var(--sp-3);font-size:1.4rem;letter-spacing:-.01em">AaBbCcDd 0123456789 &amp;?!</div>
+          <p class="t-small" style="margin-top:var(--sp-3)">Alternativas seguras: Manrope, Onest, Hanken Grotesk.</p>
+        </div>
+        <div class="card">
+          <div class="t-eyebrow" style="margin-bottom:8px">Serifa de apoio (depoimentos)</div>
+          <div style="font-family:Georgia,'Times New Roman',serif;font-size:var(--step-3);font-style:italic">“Reduzi meus erros de contagem a zero.”</div>
+          <p class="t-small" style="margin-top:var(--sp-4)">Uso restrito: citações e provas sociais. Substitutos: Fraunces, Newsreader, Source Serif.</p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="spec"><div class="label"><b>H1 · Display</b>44px / 700<br>line 1.1</div><div class="t-h1">Domine a instrumentação em cirurgia plástica</div></div>
+        <div class="spec"><div class="label"><b>H2 · Seção</b>34px / 600<br>line 1.15</div><div class="t-h2">O método que padroniza sua mesa</div></div>
+        <div class="spec"><div class="label"><b>H3 · Subtítulo</b>26px / 600</div><div class="t-h3">Do pré ao pós-operatório</div></div>
+        <div class="spec"><div class="label"><b>H4 · Bloco</b>20px / 600</div><div class="t-h4">Módulo 3 — Fios e agulhas</div></div>
+        <div class="spec"><div class="label"><b>Corpo</b>16px / 400<br>line 1.6</div><div class="t-body">Texto de leitura confortável, com largura máxima ~65 caracteres. A base para descrições, benefícios e conteúdo de página.</div></div>
+        <div class="spec"><div class="label"><b>Legenda</b>13px / 400</div><div class="t-small">Detalhes, observações legais e microcopy de formulário.</div></div>
+        <div class="spec"><div class="label"><b>Eyebrow</b>13px / mono<br>caps · +0.18em</div><div class="t-eyebrow">Turma 2026 · vagas limitadas</div></div>
+      </div>
+    </section>
+
+    <section id="componentes">
+      <div class="sec-head"><span class="num">03</span><h2>Componentes</h2></div>
+      <p class="lead-2">Os componentes abaixo são renderizados com os próprios tokens do sistema — o que você vê é o CSS a copiar.</p>
+      <h4 style="margin-bottom:var(--sp-4)">Botões</h4>
+      <div class="card" style="margin-bottom:var(--sp-5)">
+        <div class="btn-row" style="margin-bottom:var(--sp-4)">
+          <button class="btn btn-primary">Quero garantir minha vaga</button>
+          <button class="btn btn-secondary">Ver o conteúdo</button>
+          <button class="btn btn-outline">Baixar ementa</button>
+          <button class="btn btn-ghost">Tenho dúvidas →</button>
+          <button class="btn btn-primary" disabled>Enviando…</button>
+        </div>
+        <p class="t-small">Formato <b>pill</b> (radius 100px), caixa-alta, peso 500. <b>Primário dourado</b> = a ação principal, um por tela. Hover escurece e sobe 1px; foco recebe halo dourado (acessível por teclado).</p>
+      </div>
+      <div class="cols-2" style="align-items:start">
+        <div>
+          <h4 style="margin-bottom:var(--sp-4)">Inputs de formulário</h4>
+          <div class="card">
+            <div class="field"><label for="n">Nome completo</label><input class="input" id="n" placeholder="Como aparece no seu crachá"></div>
+            <div class="field"><label for="e">E-mail profissional</label><input class="input" id="e" type="email" placeholder="voce@hospital.com.br"><span class="hint">Enviaremos o acesso e a nota fiscal aqui.</span></div>
+            <div class="field"><label for="w">WhatsApp</label><input class="input err" id="w" value="(11) 9999" aria-invalid="true"><span class="err-msg">⚠ Número incompleto — inclua o DDD e os 9 dígitos.</span></div>
+            <button class="btn btn-primary" style="width:100%;justify-content:center">Quero me inscrever</button>
+          </div>
+        </div>
+        <div>
+          <h4 style="margin-bottom:var(--sp-4)">Card de oferta</h4>
+          <div class="offer">
+            <div class="top"><div class="k">Formação completa</div><div style="font-size:var(--step-2);font-weight:700;margin-top:4px">Instrumentador Plástico Pro</div></div>
+            <div class="body">
+              <div class="scarcity">● Restam 12 vagas nesta turma</div>
+              <div class="price">12× R$ 197 <small>ou R$ 1.970 à vista</small></div>
+              <ul>
+                <li><span class="check">✓</span><span><b>8 módulos</b> do básico à cirurgia complexa</span></li>
+                <li><span class="check">✓</span><span><b>Checklists</b> de mesa prontos para imprimir</span></li>
+                <li><span class="check">✓</span><span><b>Certificado</b> e comunidade fechada</span></li>
+              </ul>
+              <button class="btn btn-primary" style="width:100%;justify-content:center">Comprar agora</button>
+              <p class="t-small" style="margin-top:var(--sp-3);text-align:center">7 dias de garantia incondicional.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="estetica">
+      <div class="sec-head"><span class="num">04</span><h2>Estética</h2></div>
+      <p class="lead-2">A origem é <b>flat</b> (sem sombras) com cantos generosos. Para uma landing de conversão adicionamos 2 níveis sutis de elevação — só onde ajudam a hierarquia (card de oferta, dropdowns).</p>
+      <div class="cols-2" style="align-items:start">
+        <div>
+          <h4 style="margin-bottom:var(--sp-3)">Arredondamento</h4>
+          <div class="tok">
+            <div class="tok-row"><div class="tok-name">--r-sm <span>· 10px</span> — inputs, tags</div><div class="demo radius-demo" style="border-radius:10px"></div></div>
+            <div class="tok-row"><div class="tok-name">--r-md <span>· 15px</span> — cards pequenos</div><div class="demo radius-demo" style="border-radius:15px"></div></div>
+            <div class="tok-row"><div class="tok-name">--r-lg <span>· 24px</span> — cards de conteúdo</div><div class="demo radius-demo" style="border-radius:24px"></div></div>
+            <div class="tok-row"><div class="tok-name">--r-xl <span>· 40px</span> — imagens, blocos</div><div class="demo radius-demo" style="border-radius:40px"></div></div>
+            <div class="tok-row"><div class="tok-name">--r-pill <span>· 100px</span> — botões</div><div class="demo radius-demo" style="border-radius:100px"></div></div>
+          </div>
+          <h4 style="margin:var(--sp-5) 0 var(--sp-3)">Elevação</h4>
+          <div class="tok">
+            <div class="tok-row"><div class="tok-name">--sh-1 <span>· repouso</span></div><div class="demo elev-demo" style="box-shadow:var(--sh-1)"></div></div>
+            <div class="tok-row"><div class="tok-name">--sh-2 <span>· destaque</span></div><div class="demo elev-demo" style="box-shadow:var(--sh-2)"></div></div>
+            <div class="tok-row"><div class="tok-name">--sh-focus <span>· foco/teclado</span></div><div class="demo elev-demo" style="box-shadow:var(--sh-focus)"></div></div>
+          </div>
+        </div>
+        <div>
+          <h4 style="margin-bottom:var(--sp-3)">Espaçamento — grade 8pt</h4>
+          <div class="panel">
+            <div class="tok" style="gap:var(--sp-3)">
+              <div><div class="tok-name" style="margin-bottom:6px">4 · xs <span>— ícone/texto</span></div><div class="space-demo" style="width:4px"></div></div>
+              <div><div class="tok-name" style="margin-bottom:6px">8 · sm <span>— dentro de componente</span></div><div class="space-demo" style="width:8px"></div></div>
+              <div><div class="tok-name" style="margin-bottom:6px">16 · md <span>— entre elementos</span></div><div class="space-demo" style="width:16px"></div></div>
+              <div><div class="tok-name" style="margin-bottom:6px">24 · lg <span>— dentro de cards</span></div><div class="space-demo" style="width:24px"></div></div>
+              <div><div class="tok-name" style="margin-bottom:6px">48 · xl <span>— entre blocos</span></div><div class="space-demo" style="width:48px"></div></div>
+              <div><div class="tok-name" style="margin-bottom:6px">96 · 2xl <span>— entre seções</span></div><div class="space-demo" style="width:96px"></div></div>
+            </div>
+            <p class="t-small" style="margin-top:var(--sp-4)">Múltiplos de 8 mantêm o ritmo vertical previsível. Respiro entre seções (96px) é o que dá a sensação “premium” sem esforço.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="usabilidade">
+      <div class="sec-head"><span class="num">05</span><h2>Usabilidade para conversão</h2></div>
+      <p class="lead-2">Regras práticas para que a landing venda o infoproduto ao instrumentador plástico — profissional de rotina intensa, muitas vezes acessando pelo celular entre cirurgias.</p>
+      <div class="usability">
+        <div class="u-card"><h4>Um CTA por tela</h4><p>Só o botão dourado inicia a compra. Repita o mesmo texto e cor a cada seção; nunca compita com dois dourados.</p></div>
+        <div class="u-card"><h4>Alvos de toque ≥ 44px</h4><p>Botões e campos com altura mínima de 48px — dedo com luva ou pressa não pode errar.</p></div>
+        <div class="u-card"><h4>Contraste AA</h4><p>Espresso sobre creme e off-white passa em AA. Dourado só carrega texto claro em botões, nunca texto dourado sobre creme.</p></div>
+        <div class="u-card"><h4>Escassez honesta</h4><p>Use o vermelho-alerta só para vagas/tempo reais. Cor funcional ≠ acento; não vira decoração.</p></div>
+        <div class="u-card"><h4>Prova social visível</h4><p>Depoimentos em serifa itálica logo após o primeiro CTA reduzem a objeção de “isso funciona?”.</p></div>
+        <div class="u-card"><h4>Formulário curto</h4><p>Nome, e-mail, WhatsApp. Cada campo a mais derruba conversão; peça o resto depois da compra.</p></div>
+        <div class="u-card"><h4>Mobile-first</h4><p>Uma coluna, tipografia ≥16px, CTA fixo no rodapé em telas pequenas.</p></div>
+        <div class="u-card"><h4>Garantia à vista</h4><p>Selo de 7 dias sempre colado ao botão de compra — reduz o risco percebido no clique.</p></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>Design System · derivado da landing DDP (rennanmezabarba.com.br) e adaptado para infoproduto de instrumentação plástica.</span>
+    <span class="mono">Host Grotesk · #412F21 / #AF9364 / #FFFBF2</span>
+  </div>
+</footer>
+
+<script>
+  const r=document.documentElement, b=document.getElementById('tt');
+  b.addEventListener('click',()=>{
+    const cur=r.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+    r.setAttribute('data-theme', cur==='dark'?'light':'dark');
+  });
+</script>
+</body>
+</html>
